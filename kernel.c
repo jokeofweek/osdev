@@ -12,11 +12,11 @@
 #include "screen.c"
 
 kernel_main(){
-	initializeConsole();
+	initialize_console();
 	puts("Hello, World!\n");
-	setTextColor(RED, LIGHT_GREY);
+	set_text_color(RED, LIGHT_GREY);
 	puts("\tWelcome to my OS!\n");
-	setTextColor(WHITE, BLACK);
+	set_text_color(WHITE, BLACK);
 	puts("The address for video memory is: ");
 	puthex(0xb8000);
 	for(;;);

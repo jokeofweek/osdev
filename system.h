@@ -21,17 +21,18 @@ extern u16int inportw (u16int port);
 //extern void gdt_set_gate(int num, unsigned long base, unsigned long limit, unsigned char access, unsigned char gran);
 
 /* Strings */
-extern u8int getTextAttribute(u8int foreground, u8int background);
-extern u16int getAttributeTextValue(u8int u8intacter, u8int attributes);
-extern u16int getTextValue(u8int u8intacter, u8int foreground, u8int background);
+extern u8int get_text_attribute(u8int foreground, u8int background);
+extern u16int get_attribute_text_value(u8int character, u8int attributes);
+extern u16int get_text_value(u8int character, u8int foreground, u8int background);
 extern void cls();
 extern void scroll();
 extern void putc(u8int c);
 extern void puts(u8int *str);
-extern u8int u8intToHexCharacter(u8int i);
+extern u8int u8int_to_hex_char(u8int i);
 extern void puthex(u32int i);
 extern void putdec(u32int i);
-extern void updateCursor();
+extern void update_cursor();
+void initialize_console();
 
 /* Strings */
 extern size_t strlen(const u8int *str);

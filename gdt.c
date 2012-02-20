@@ -27,6 +27,7 @@ struct gdt_ptr {
 struct gdt_entry gdt[3];
 struct gdt_ptr gp;
 
-/* This will be a function in start.asm. We use this to properly
-*  reload the new segment registers */
+/*
+ * Assembly function in 'start.asm' used to reload new segment registers.
+ */
 extern void gdt_flush();

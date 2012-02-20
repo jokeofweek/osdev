@@ -26,29 +26,29 @@ typedef struct {
 	u32int y;
 } console;
 
-console mainConsole;
-u16int *videoMemory = (u16int *) VIDEO_MEMORY_ADDRESS;
-u8int *u8videoMemory = (u8int *) VIDEO_MEMORY_ADDRESS;
+console main_console;
+u16int *video_memory = (u16int *) VIDEO_MEMORY_ADDRESS;
+u8int *u8video_memory = (u8int *) VIDEO_MEMORY_ADDRESS;
 	
 /*
  * Calculates the attribute byte for a foreground and a background color.
  */
-u8int getTextAttribute(u8int foreground, u8int background){
+u8int get_text_attribute(u8int foreground, u8int background){
 	return (background << 4) | (foreground & 0x0F);
 }
 
 /*
- * Calculates the 16-bit value of a u8intacter and attribute.
+ * Calculates the 16-bit value of a character and attribute.
  */
-u16int getAttributeTextValue(u8int u8intacter, u8int attributes){
-	return u8intacter | (attributes << 8);
+u16int get_attribute_text_value(u8int character, u8int attributes){
+	return character | (attributes << 8);
 }
 
 /*
- * Calculates the 16-bit value of a u8intacter, foreground and background.
+ * Calculates the 16-bit value of a character, foreground and background.
  */
-u16int getTextValue(u8int u8intacter, u8int foreground, u8int background){
-	return u8intacter | (getTextAttribute(foreground, background) << 8);
+u16int get_text_value(u8int character, u8int foreground, u8int background){
+	return character | (get_text_attribute(foreground, background) << 8);
 }
 
 /*
@@ -60,33 +60,33 @@ void cls(){
 	u32int i=0;
 	
 	 // empty text with white text.
-	u16int blankCell = getTextValue(' ', WHITE, BLACK);
+	u16int blankCell = get_text_value(' ', WHITE, BLACK);
 	
 	for (i = 0; i < SCREEN_ROWS; i++)
-		memsetw(videoMemory + (i * SCREEN_COLUMNS), blankCell, SCREEN_COLUMNS);
+		memsetw(video_memory + (i * SCREEN_COLUMNS), blankCell, SCREEN_COLUMNS);
 		
 	// Clear current console options
-	mainConsole.attributes = getTextAttribute(WHITE, BLACK);
-	mainConsole.x = 0;
-	mainConsole.y = 0;
-	updateCursor();
+	main_console.attributes = get_text_attribute(WHITE, BLACK);
+	main_console.x = 0;
+	main_console.y = 0;
+	update_cursor();
 }
 
 /*
  * Scroll the screen up a line.
  */
 void scroll(){
-	u16int blankCell = getTextValue(' ', WHITE, BLACK);
+	u16int blankCell = get_text_value(' ', WHITE, BLACK);
 	
 	// If we are not at the end number of rows, then all we must do is move down by one
-	if (mainConsole.y >= SCREEN_ROWS){
+	if (main_console.y >= SCREEN_ROWS){
 		// Find the new line 1
-		u16int offset = mainConsole.y - SCREEN_ROWS + 1;
-		memcpy(u8videoMemory, u8videoMemory + (offset * SCREEN_COLUMNS * 2), (SCREEN_ROWS - offset) * SCREEN_COLUMNS * 2);
+		u16int offset = main_console.y - SCREEN_ROWS + 1;
+		memcpy(u8video_memory, u8video_memory + (offset * SCREEN_COLUMNS * 2), (SCREEN_ROWS - offset) * SCREEN_COLUMNS * 2);
 		
 		// Clear the last row
-		memsetw(videoMemory + ((SCREEN_ROWS - offset) * SCREEN_COLUMNS), blankCell, SCREEN_COLUMNS);
-		mainConsole.y = SCREEN_ROWS - 1;
+		memsetw(video_memory + ((SCREEN_ROWS - offset) * SCREEN_COLUMNS), blankCell, SCREEN_COLUMNS);
+		main_console.y = SCREEN_ROWS - 1;
 	}
 }
 
@@ -95,34 +95,34 @@ void putc(u8int c){
 	
 	// Backspace - move cursor back one position.
 	if (c == 0x08){
-		if (mainConsole.x > 0)
-			mainConsole.x--;
+		if (main_console.x > 0)
+			main_console.x--;
 	// Tab - move cursor towards next x which is divisible by 8
 	} else if (c == 0x09) {
-		mainConsole.x = (mainConsole.x + 8) & ~(8 - 1);
+		main_console.x = (main_console.x + 8) & ~(8 - 1);
 	// Carriage return - set x to 0
 	} else if (c == '\r'){
-		mainConsole.x = 0;
+		main_console.x = 0;
 	// New line
 	} else if (c == '\n'){
-		mainConsole.x = 0;
-		mainConsole.y++;
-	// Printable u8intacter
+		main_console.x = 0;
+		main_console.y++;
+	// Printable character
 	} else if (c >= ' '){
-		cellPos = videoMemory + ((mainConsole.y * SCREEN_COLUMNS) + mainConsole.x);
-		*cellPos = getAttributeTextValue(c, mainConsole.attributes);
-		mainConsole.x++;
+		cellPos = video_memory + ((main_console.y * SCREEN_COLUMNS) + main_console.x);
+		*cellPos = get_attribute_text_value(c, main_console.attributes);
+		main_console.x++;
 	}
 	
 	// Move line down y 1 if we have reached the edge of the columns
-	if (mainConsole.x > SCREEN_COLUMNS){
-		mainConsole.x = 0;
-		mainConsole.y++;
+	if (main_console.x > SCREEN_COLUMNS){
+		main_console.x = 0;
+		main_console.y++;
 	}
 	
 	// Scroll and update cursor.
 	scroll();
-	updateCursor();
+	update_cursor();
 }
 
 
@@ -136,7 +136,7 @@ void puts(u8int *str){
 		putc(str[i]);
 }
 
-u8int u8intToHexCharacter(u8int i){
+u8int u8int_to_hex_char(u8int i){
 	if (i < 10){
 		return '0' + i;
 	} else {
@@ -155,7 +155,7 @@ void puthex(u32int i){
 	
 	while (pos > 0){
 		current = (u8int) i & 0x0f;
-		result[1 + pos] = u8intToHexCharacter(current);
+		result[1 + pos] = u8int_to_hex_char(current);
 		i = i >> 4;
 		pos--;
 	}
@@ -170,8 +170,8 @@ void putdec(u32int i){
 /*
  * Sends a hardware message to make the new cursor position blink.
  */
-void updateCursor(){
-	u16int offset = (mainConsole.y * SCREEN_COLUMNS) + mainConsole.x;
+void update_cursor(){
+	u16int offset = (main_console.y * SCREEN_COLUMNS) + main_console.x;
 	outportb(0x3D4, 14);
     outportb(0x3D5, offset >> 8);
     outportb(0x3D4, 15);
@@ -181,9 +181,8 @@ void updateCursor(){
 /*
  * This updates the current text color and background color of the console.
  */
-void setTextColor(u8int foreground, u8int background);
-void setTextColor(u8int foreground, u8int background){
-	mainConsole.attributes = getTextAttribute(foreground, background);
+void set_text_color(u8int foreground, u8int background){
+	main_console.attributes = get_text_attribute(foreground, background);
 }
 
 /*
@@ -192,7 +191,7 @@ void setTextColor(u8int foreground, u8int background){
  /*
 void kernel_printf(u8int *message, u32int line, u32int column);
 void kernel_printf(u8int *message, u32int line, u32int column){
-	u8int *videoMemory = (u8int *) VIDEO_MEMORY_ADDRESS;
+	u8int *video_memory = (u8int *) VIDEO_MEMORY_ADDRESS;
 	
 	// Need to start at right line, and each line is 80 spaces.
 	// We also nee to multiply by two as there is two bytes
@@ -206,19 +205,19 @@ void kernel_printf(u8int *message, u32int line, u32int column){
 			i = (((line * 80) + column) * 2);
 		// 4 empty spaces for tabs
 		} else if (*message == '\t'){
-			videoMemory[i++] = ' ';
-			videoMemory[i++] = WHITE;
-			videoMemory[i++] = ' ';
-			videoMemory[i++] = WHITE;
-			videoMemory[i++] = ' ';
-			videoMemory[i++] = WHITE;
-			videoMemory[i++] = ' ';
-			videoMemory[i++] = WHITE;
-		// Regular u8intacter
+			video_memory[i++] = ' ';
+			video_memory[i++] = WHITE;
+			video_memory[i++] = ' ';
+			video_memory[i++] = WHITE;
+			video_memory[i++] = ' ';
+			video_memory[i++] = WHITE;
+			video_memory[i++] = ' ';
+			video_memory[i++] = WHITE;
+		// Regular character
 		} else {
-			videoMemory[i] = *message;
+			video_memory[i] = *message;
 			i++;
-			videoMemory[i] = WHITE;
+			video_memory[i] = WHITE;
 			i++;
 		}
 		
@@ -226,7 +225,6 @@ void kernel_printf(u8int *message, u32int line, u32int column){
 	}
 }
 */
-void initializeConsole();
-void initializeConsole(){
+void initialize_console(){
 	cls();
 }
