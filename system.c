@@ -13,8 +13,9 @@ typedef u32int         size_t;
 extern u8int *memcpy(u8int *dest, const u8int *src, size_t count);
 extern u8int *memset(u8int *dest, u8int val, size_t count);
 extern u16int *memsetw(u16int *dest, u16int val, size_t count);
-extern u8int inportb (u16int _port);
-extern void outportb (u16int _port, u8int _data);
+extern u8int inportb (u16int port);
+extern void outportb (u16int port, u8int data);
+extern u16int inportw (u16int port);
 
 /*
  * Copies 'count' bytes from src to dest.
@@ -51,22 +52,29 @@ u16int *memsetw(u16int *dest, u16int val, size_t count){
 	return dest;
 }
 
-/* We will use this later on for reading from the I/O ports to get data
-*  from devices such as the keyboard. We are using what is called
-*  'inline assembly' in these routines to actually do the work */
-u8int inportb (u16int _port){
+/*
+ * Reads a byte from a given port.
+ */
+u8int inportb (u16int port){
     u8int rv;
-    __asm__ __volatile__ ("inb %1, %0" : "=a" (rv) : "dN" (_port));
+    __asm__ __volatile__ ("inb %1, %0" : "=a" (rv) : "dN" (port));
     return rv;
 }
 
-/* We will use this to write to I/O ports to send bytes to devices. This
-*  will be used in the next tutorial for changing the textmode cursor
-*  position. Again, we use some inline assembly for the stuff that simply
-*  cannot be done in C */
-void outportb (u16int _port, u8int _data)
-{
-    __asm__ __volatile__ ("outb %1, %0" : : "dN" (_port), "a" (_data));
+/*
+ * Reads a short from a given port.
+ */
+u16int inportw(u16int port){
+   u16int ret;
+   asm volatile ("inw %1, %0" : "=a" (ret) : "dN" (port));
+   return ret;
+}
+
+/* 
+ * Writes a byte to a given port.
+ */
+void outportb (u16int port, u8int data){
+    __asm__ __volatile__ ("outb %1, %0" : : "dN" (port), "a" (data));
 }
 
 #endif
