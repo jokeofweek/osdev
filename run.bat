@@ -1,0 +1,1 @@
+qemu\qemu.exe -fda images\boot.img
