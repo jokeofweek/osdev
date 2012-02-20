@@ -1,7 +1,3 @@
-
-size_t strlen(const u8int *str);
-int strcmp(const u8int *str1, const u8int *str2);	
-
 size_t strlen(const u8int *str){
 	size_t len = 0;
 	while (*str++)

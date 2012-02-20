@@ -6,6 +6,7 @@
 #define ICW1 0x11
 #define ICW4 0x01
 
+#include "system.h"
 #include "system.c"
 #include "string.c"
 #include "screen.c"

@@ -1,22 +1,3 @@
-#ifndef __SYSTEM_H
-#define __SYSTEM_H
-
-// Standardized typedefs.
-typedef unsigned int   u32int;
-typedef          int   s32int;
-typedef unsigned short u16int;
-typedef          short s16int;
-typedef unsigned char  u8int;
-typedef          char  s8int;
-typedef u32int         size_t;
-
-extern u8int *memcpy(u8int *dest, const u8int *src, size_t count);
-extern u8int *memset(u8int *dest, u8int val, size_t count);
-extern u16int *memsetw(u16int *dest, u16int val, size_t count);
-extern u8int inportb (u16int port);
-extern void outportb (u16int port, u8int data);
-extern u16int inportw (u16int port);
-
 /*
  * Copies 'count' bytes from src to dest.
  *
@@ -76,5 +57,3 @@ u16int inportw(u16int port){
 void outportb (u16int port, u8int data){
     __asm__ __volatile__ ("outb %1, %0" : : "dN" (port), "a" (data));
 }
-
-#endif

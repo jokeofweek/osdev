@@ -181,6 +181,7 @@ void updateCursor(){
 /*
  * This updates the current text color and background color of the console.
  */
+void setTextColor(u8int foreground, u8int background);
 void setTextColor(u8int foreground, u8int background){
 	mainConsole.attributes = getTextAttribute(foreground, background);
 }
@@ -189,6 +190,7 @@ void setTextColor(u8int foreground, u8int background){
  * Prints a message starting at a given cell.
  */
  /*
+void kernel_printf(u8int *message, u32int line, u32int column);
 void kernel_printf(u8int *message, u32int line, u32int column){
 	u8int *videoMemory = (u8int *) VIDEO_MEMORY_ADDRESS;
 	
@@ -224,6 +226,7 @@ void kernel_printf(u8int *message, u32int line, u32int column){
 	}
 }
 */
+void initializeConsole();
 void initializeConsole(){
 	cls();
 }
